@@ -1,26 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
+import React from "react";
 import './App.css';
+import SplashScreen from './SplashScreen';
+import Game from "./Game";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      rulesShown: false,
+      gameStarted: false
+    };
+    this.startGame = this.startGame.bind(this);
+  }
+
+  startGame() {
+    this.setState({ gameStarted: true })
+  }
+
+  render() {
+      return (
+        <div className="App d-flex flex-column justify-content-center align-items-center">
+          {!this.state.gameStarted ? (
+            <SplashScreen startGame={this.startGame} />
+          ) : (
+            <Game />
+          )}
+        </div>
+      );
+
+  }
 }
 
 export default App;
