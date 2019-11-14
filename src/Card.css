@@ -1,0 +1,32 @@
+
+
+.card-holder {
+    perspective: 800px;
+    -webkit-backface-visibility: hidden;
+    height: 0;
+    padding-bottom: 143.38%;
+    background: url('./card_back_bg.svg') no-repeat center;
+    background-size: contain;
+}
+
+.card-holder img {
+    opacity: 0;
+    transition: all .3s ease-in;
+    transform-origin: center top;
+    will-change: transform, opacity;
+    transform: rotate3d(0,1,0,90deg);
+}
+
+.card-holder.loaded.revealed {
+    height: auto;
+    padding-bottom: 0%;
+    background: none;
+}
+
+.card-holder.loaded img {
+    opacity: 1;
+}
+
+.card-holder.loaded.revealed img {
+    transform: rotate3d(0,0,0,0)
+}

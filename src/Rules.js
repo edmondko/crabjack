@@ -2,8 +2,8 @@ import React from "react";
 
 function Rules() {
   return (
-    <div className="Rules mt-5">
-      <div className="container card shadow p-3">
+    <div className="Rules mt-5 ">
+      <div className="container card shadow p-3 animated fadeInUp">
         <h2>Rules</h2>
 
         <p>Single player vs Dealer</p>
@@ -12,8 +12,8 @@ function Rules() {
         <p>Player hand dealt facing up</p>
         <br />
         <p>
-          When the player clicks the Reveal button, the Dealer Hand will be shown,
-          both hands scored, and a winner declared.
+          When the player clicks the Reveal button, the Dealer Hand will be
+          shown, both hands scored, and a winner declared.
         </p>
         <h5>Scoring</h5>
         <p>Each card is scored as follows:</p>

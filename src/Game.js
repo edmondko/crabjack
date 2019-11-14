@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import "./Game.css";
-import CardBackground from "./Helpers";
+import { Card } from "./Card";
 const apiUrl = "https://deckofcardsapi.com/api/deck";
 
 export class Game extends React.Component {
@@ -20,8 +20,7 @@ export class Game extends React.Component {
 
     this.state = this.initialState;
 
-    this.drawCard = this.drawCard.bind(this);
-    this.calcPlayerScore = this.calcPlayerScore.bind(this);
+    this.showGameResult = this.showGameResult.bind(this);
     this.handleDeal = this.handleDeal.bind(this);
     this.handleReveal = this.handleReveal.bind(this);
   }
@@ -112,26 +111,31 @@ export class Game extends React.Component {
       playerScore += cardScore;
     });
 
-    this.setState({
-      [currentPlayer]: {
-        cards: this.state[currentPlayer].cards,
-        score: playerScore
+    this.setState(
+      {
+        [currentPlayer]: {
+          cards: this.state[currentPlayer].cards,
+          score: playerScore
+        }
+      },
+      () => {
+        this.checkWinner();
       }
-    }, ()=>{
-      this.checkWinner()
-    });
-
+    );
   }
 
   calcScore() {
-    this.calcPlayerScore("playersHand");
     this.calcPlayerScore("dealersHand");
+    this.calcPlayerScore("playersHand");
   }
 
   checkWinner() {
     const { dealersHand, playersHand } = this.state;
 
-    if (playersHand.score > 21) {
+    if (
+      playersHand.score > 21 ||
+      (dealersHand.score <= 21 && dealersHand.score > playersHand.score)
+    ) {
       this.setState({ gameResult: "Bust" });
       return;
     }
@@ -141,16 +145,13 @@ export class Game extends React.Component {
       return;
     }
 
-    if (playersHand.score <= 21 && (playersHand.score >= dealersHand.score || dealersHand.score > 21)) {
+    if (
+      playersHand.score <= 21 &&
+      (playersHand.score >= dealersHand.score || dealersHand.score > 21)
+    ) {
       this.setState({ gameResult: "You win!" });
       return;
     }
-
-
-    // if (dealersHand.score <= 21 dealersHand.score >= playersHand.score && ) {
-    //   this.setState({ gameResult: "Dealer wins!" });
-    //   return;
-    // }
   }
 
   handleReveal() {
@@ -158,38 +159,61 @@ export class Game extends React.Component {
     this.setState({
       cardsRevealed: true
     });
+  }
 
+  showGameResult() {
+    return (
+      <div className="position-fixed game-result d-flex justify-content-center align-items-cener flex-column">
+        <div className="row no-gutters mb-5 animated fadeIn delay-1s">
+          <div className="col-10 col-md-6 mx-auto">
+            <div className="card shadow p-3">
+              <h2>{this.state.gameResult ? this.state.gameResult : ""}</h2>
+              <p>
+                Dealers score: <strong>{this.state.dealersHand.score}</strong>
+              </p>
+              <p>
+                Your score : <strong>{this.state.playersHand.score}</strong>
+              </p>
+              <button
+                className={"btn btn-lg btn-success"}
+                onClick={this.handleDeal}
+              >
+                Deal
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   render() {
     return (
       <div
         className={
-          "Game-container d-flex flex-column justify-content-between p-3 p-md-4 p-lg-5"
+          "game-container w-100 h-100 d-flex flex-column justify-content-between"
         }
       >
-        <div className="dealerHand row justify-content-center">
-          {this.state.dealersHand.cards.length > 0
-            ? this.state.dealersHand.cards.map(card => (
-                <div className={"col-4 px-1"} key={`dealers_card_${card.code}`}>
-                  {!this.state.cardsRevealed ? (
-                    <CardBackground />
-                  ) : (
-                    <img className="w-100" src={card.image} alt={card.code} />
-                  )}
-                </div>
-              ))
-            : [...Array(this.placeholderItems)].map((e, i) => {
-                return (
+        <div className="dealer-hand d-flex flex-column flex-fill justify-content-start ">
+          <h2 className={"text-white"}>Dealer's hand</h2>
+          <div className="row justify-content-center">
+            {this.state.dealersHand.cards.length > 0
+              ? this.state.dealersHand.cards.map((card, index) => (
                   <div
-                    className={"col-4 px-1"}
-                    key={`dealers_card_placeholder${i}`}
+                    className={`col-4 py-3 overflow-hidden`}
+                    key={`dealers_card_${card.code}`}
                   >
-                    <CardBackground />
+                    <Card
+                      imageSrc={card.image}
+                      alt={card.code}
+                      revealed={this.state.cardsRevealed}
+                    />
                   </div>
-                );
-              })}
+                ))
+              : null}
+          </div>
         </div>
+
         <div className="btn-group my-3 my-xl-5 align-self-center">
           <button
             className={
@@ -202,47 +226,26 @@ export class Game extends React.Component {
             Reveal
           </button>
         </div>
-        <div className="playerHand row justify-content-center">
-          {this.state.playersHand.cards.length > 0
-            ? this.state.playersHand.cards.map(card => (
-                <div className={"col-4 px-1"} key={`players_card_${card.code}`}>
-                  <img className="w-100" src={card.image} alt={card.code} />
-                </div>
-              ))
-            : [...Array(this.placeholderItems)].map((e, i) => {
-                return (
+        <div className="player-hand d-flex flex-column flex-fill justify-content-end">
+          <div className="row justify-content-center">
+            {this.state.playersHand.cards.length > 0
+              ? this.state.playersHand.cards.map((card, index) => (
                   <div
-                    className={"col-4 px-1"}
-                    key={`players_card_placeholder${i}`}
+                    className={`col-4 py-3 overflow-hidden`}
+                    key={`players_card_${card.code}`}
                   >
-                    <CardBackground />
+                    <Card
+                      imageSrc={card.image}
+                      alt={card.code}
+                      revealed={true}
+                    />
                   </div>
-                );
-              })}
-        </div>
-        {this.state.cardsRevealed ? (
-          <div className="position-fixed Game-result d-flex justify-content-center align-items-cener flex-column">
-            <div className="row no-gutters m-0 p-0">
-              <div className="col-10 col-md-6 mx-auto">
-                <div className="card shadow p-3">
-                  <h2>{this.state.gameResult ? this.state.gameResult : ''}</h2>
-                  <p>
-                    Dealers score: <strong>{this.state.dealersHand.score}</strong>
-                  </p>
-                  <p>
-                    Your score : <strong>{this.state.playersHand.score}</strong>
-                  </p>
-                  <button
-                    className={"btn btn-lg btn-success"}
-                    onClick={this.handleDeal}
-                  >
-                    Deal
-                  </button>
-                </div>
-              </div>
-            </div>
+                ))
+              : null}
           </div>
-        ) : null}
+          <h2 className={"text-white"}>Your hand</h2>
+        </div>
+        {this.state.cardsRevealed ? this.showGameResult() : null}
       </div>
     );
   }
