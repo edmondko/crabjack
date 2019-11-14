@@ -60,29 +60,22 @@ export class Game extends React.Component {
       if (response.data.success) {
         const dealtCards = response.data.cards;
         let dealersCards = dealtCards.filter((elem, index) => {
-          return (index % 2 === 0);
+          return index % 2 === 0;
         });
         let playersCards = dealtCards.filter((elem, index) => {
-          return (index % 2 !== 0);
+          return index % 2 !== 0;
         });
-        console.log(dealersCards);
-        console.log(playersCards);
 
-        this.setState(
-          {
-            dealersHand: {
-              cards: dealersCards,
-              score: this.state.dealersHand.score
-            },
-            playersHand: {
-              cards: playersCards,
-              score: this.state.playersHand.score
-            }
+        this.setState({
+          dealersHand: {
+            cards: dealersCards,
+            score: this.state.dealersHand.score
           },
-          () => {
-            console.log(this.state);
+          playersHand: {
+            cards: playersCards,
+            score: this.state.playersHand.score
           }
-        );
+        });
       }
     });
   }
@@ -119,49 +112,53 @@ export class Game extends React.Component {
       playerScore += cardScore;
     });
 
-    this.setState(state => {
-      state[currentPlayer].score = playerScore;
+    this.setState({
+      [currentPlayer]: {
+        cards: this.state[currentPlayer].cards,
+        score: playerScore
+      }
+    }, ()=>{
+      this.checkWinner()
     });
+
+  }
+
+  calcScore() {
+    this.calcPlayerScore("playersHand");
+    this.calcPlayerScore("dealersHand");
   }
 
   checkWinner() {
-    this.calcPlayerScore("playersHand");
-    this.calcPlayerScore("dealersHand");
+    const { dealersHand, playersHand } = this.state;
 
-    if (this.state.playersHand.score > 21) {
+    if (playersHand.score > 21) {
       this.setState({ gameResult: "Bust" });
       return;
     }
 
-    if (
-      (this.state.playersHand.score > 21 &&
-        this.state.dealersHand.score > 21) ||
-      this.state.playersHand.score === this.state.dealersHand.score
-    ) {
+    if (playersHand.score === dealersHand.score) {
       this.setState({ gameResult: "Draw" });
       return;
     }
 
-    if (
-      this.state.playersHand.score > 21 ||
-      this.state.dealersHand.score <= 21
-    ) {
-      this.setState({ gameResult: "Dealer wins!" });
+    if (playersHand.score <= 21 && (playersHand.score >= dealersHand.score || dealersHand.score > 21)) {
+      this.setState({ gameResult: "You win!" });
       return;
     }
-    if (
-      this.state.dealersHand.score > 21 ||
-      this.state.dealersHand.score <= 21
-    ) {
-      this.setState({ gameResult: "You win!" });
-    }
+
+
+    // if (dealersHand.score <= 21 dealersHand.score >= playersHand.score && ) {
+    //   this.setState({ gameResult: "Dealer wins!" });
+    //   return;
+    // }
   }
 
   handleReveal() {
+    this.calcScore();
     this.setState({
       cardsRevealed: true
     });
-    this.checkWinner();
+
   }
 
   render() {
@@ -172,16 +169,26 @@ export class Game extends React.Component {
         }
       >
         <div className="dealerHand row justify-content-center">
-          {this.state.dealersHand.cards.length > 0 ?
-            this.state.dealersHand.cards.map(card => (
-              <div className={"col-4 px-1"} key={`dealers_card_${card.code}`}>
-                {!this.state.cardsRevealed ? (
-                  <CardBackground />
-                ) : (
-                  <img className="w-100" src={card.image} alt={card.code} />
-                )}
-              </div>
-            )): null}
+          {this.state.dealersHand.cards.length > 0
+            ? this.state.dealersHand.cards.map(card => (
+                <div className={"col-4 px-1"} key={`dealers_card_${card.code}`}>
+                  {!this.state.cardsRevealed ? (
+                    <CardBackground />
+                  ) : (
+                    <img className="w-100" src={card.image} alt={card.code} />
+                  )}
+                </div>
+              ))
+            : [...Array(this.placeholderItems)].map((e, i) => {
+                return (
+                  <div
+                    className={"col-4 px-1"}
+                    key={`dealers_card_placeholder${i}`}
+                  >
+                    <CardBackground />
+                  </div>
+                );
+              })}
         </div>
         <div className="btn-group my-3 my-xl-5 align-self-center">
           <button
@@ -196,25 +203,35 @@ export class Game extends React.Component {
           </button>
         </div>
         <div className="playerHand row justify-content-center">
-          {this.state.playersHand.cards.length > 0 ?
-            this.state.playersHand.cards.map(card => (
-              <div
-                className={"col-4 px-1"}
-                key={`players_card_${card.code}`}
-              >
-                <img className="w-100" src={card.image} alt={card.code} />
-              </div>
-            )) : null
-            }
+          {this.state.playersHand.cards.length > 0
+            ? this.state.playersHand.cards.map(card => (
+                <div className={"col-4 px-1"} key={`players_card_${card.code}`}>
+                  <img className="w-100" src={card.image} alt={card.code} />
+                </div>
+              ))
+            : [...Array(this.placeholderItems)].map((e, i) => {
+                return (
+                  <div
+                    className={"col-4 px-1"}
+                    key={`players_card_placeholder${i}`}
+                  >
+                    <CardBackground />
+                  </div>
+                );
+              })}
         </div>
         {this.state.cardsRevealed ? (
           <div className="position-fixed Game-result d-flex justify-content-center align-items-cener flex-column">
             <div className="row no-gutters m-0 p-0">
               <div className="col-10 col-md-6 mx-auto">
                 <div className="card shadow p-3">
-                  <h2>{this.state.gameResult}</h2>
-                  <p>Dealers score : {this.state.dealersHand.score}</p>
-                  <p>Your score : {this.state.playersHand.score}</p>
+                  <h2>{this.state.gameResult ? this.state.gameResult : ''}</h2>
+                  <p>
+                    Dealers score: <strong>{this.state.dealersHand.score}</strong>
+                  </p>
+                  <p>
+                    Your score : <strong>{this.state.playersHand.score}</strong>
+                  </p>
                   <button
                     className={"btn btn-lg btn-success"}
                     onClick={this.handleDeal}
