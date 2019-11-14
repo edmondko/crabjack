@@ -23,9 +23,7 @@ class SplashScreen extends React.Component {
     return (
       <div className="SplashScreen">
         <div>
-          <h1 className="display-5 text-white text-shadow mb-5">
-            CrapJack
-          </h1>
+          <h1 className="display-5 text-white text-shadow mb-5">CrapJack</h1>
           <div className="btn-group">
             <button
               className={"btn btn-lg btn-success"}
@@ -37,7 +35,7 @@ class SplashScreen extends React.Component {
               className={"btn btn-lg btn-secondary"}
               onClick={() => this.toggleRules(!this.state.rulesShown)}
             >
-              {this.state.rulesShown ? 'Hide': 'View'} rules
+              {this.state.rulesShown ? "Hide" : "View"} rules
             </button>
           </div>
           <div>{this.state.rulesShown ? <Rules /> : null}</div>

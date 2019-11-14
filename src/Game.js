@@ -196,7 +196,7 @@ export class Game extends React.Component {
       >
         <div className="dealer-hand d-flex flex-column flex-fill justify-content-start ">
           <h2 className={"text-white"}>Dealer's hand</h2>
-          <div className="row justify-content-center">
+          <div className="row justify-content-center px-3">
             {this.state.dealersHand.cards.length > 0
               ? this.state.dealersHand.cards.map((card, index) => (
                   <div
@@ -227,7 +227,7 @@ export class Game extends React.Component {
           </button>
         </div>
         <div className="player-hand d-flex flex-column flex-fill justify-content-end">
-          <div className="row justify-content-center">
+          <div className="row justify-content-center px-3">
             {this.state.playersHand.cards.length > 0
               ? this.state.playersHand.cards.map((card, index) => (
                   <div
