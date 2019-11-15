@@ -1,3 +1,5 @@
+// This component is reused for each card rendered in game
+
 import React, { useState } from "react";
 import "./Card.css";
 

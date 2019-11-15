@@ -23,7 +23,10 @@ class SplashScreen extends React.Component {
     return (
       <div className="SplashScreen">
         <div>
-          <h1 className="display-5 text-white text-shadow mb-5">CrapJack</h1>
+          <h1 className="display-5 text-white text-shadow mb-0">CrapJack</h1>
+          <h5 className="text-white text-shadow mb-5">
+            <i>by Edmond Ko</i>
+          </h5>
           <div className="actions">
             <button
               className={"btn btn-block btn-lg btn-success"}

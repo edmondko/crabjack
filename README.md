@@ -14,8 +14,7 @@ I've spent about 8 hours totally for finishing the core task;
 - 4h for logic implementation
 - 3h for design and basic animations
 
-The task itself can be pretty extensive since a lot can be improved and optimized but since the given dead line, I couldn't commit to finish all of the Advanced features.
-The one I focused on was animations of the revealing of the cards.
+I've implemented a Scoreboard for current game session and some basic Card animations for revealing
 
 
 

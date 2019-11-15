@@ -64,7 +64,11 @@ class App extends React.Component {
         {!this.state.gameStarted ? (
           <SplashScreen startGame={this.startGame} />
         ) : (
-          <Game endGame={this.endGame} updateScore={this.updateScore} gameScore={this.state.score} />
+          <Game
+            endGame={this.endGame}
+            updateScore={this.updateScore}
+            gameScore={this.state.score}
+          />
         )}
       </div>
     );

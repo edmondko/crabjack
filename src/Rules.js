@@ -4,7 +4,6 @@ function Rules() {
   return (
     <div className="Rules ">
         <h2>Rules</h2>
-
         <p>Single player vs Dealer</p>
         <p>Each player dealt 3 Cards</p>
         <p>Dealer Hand will be dealt Face Down</p>

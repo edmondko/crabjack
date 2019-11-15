@@ -1,3 +1,5 @@
+// This component is the Game itself
+
 import React from "react";
 import axios from "axios";
 import "./Game.css";
@@ -189,7 +191,7 @@ export class Game extends React.Component {
     const getResulStyles = () => {
       let titleStyling = "text-capitalize text-white rounded p-1 shadow-sm";
       if (gameResultMessage === this.strings.win) {
-        titleStyling += " bg-success"
+        titleStyling += " bg-success";
       }
       if (gameResultMessage === this.strings.draw) {
         titleStyling += " bg-warning";
