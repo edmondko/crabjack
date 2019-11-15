@@ -2,8 +2,7 @@ import React from "react";
 
 function Rules() {
   return (
-    <div className="Rules mt-5 ">
-      <div className="container card shadow p-3 animated fadeInUp">
+    <div className="Rules ">
         <h2>Rules</h2>
 
         <p>Single player vs Dealer</p>
@@ -25,7 +24,6 @@ function Rules() {
           The player with the hand closest to, but less than or equal to 21 wins
         </p>
       </div>
-    </div>
   );
 }
 

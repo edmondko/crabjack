@@ -2,7 +2,6 @@ import React from "react";
 import "./App.css";
 import SplashScreen from "./SplashScreen";
 import Game from "./Game";
-import ScoreBoard from "./ScoreBoard";
 
 class App extends React.Component {
   constructor(props) {
@@ -63,12 +62,9 @@ class App extends React.Component {
     return (
       <div className="App d-flex flex-column justify-content-center align-items-center">
         {!this.state.gameStarted ? (
-          <div>
-            <SplashScreen startGame={this.startGame} />
-            <ScoreBoard {...this.state.score} />
-          </div>
+          <SplashScreen startGame={this.startGame} />
         ) : (
-          <Game endGame={this.endGame} updateScore={this.updateScore} />
+          <Game endGame={this.endGame} updateScore={this.updateScore} gameScore={this.state.score} />
         )}
       </div>
     );

@@ -1,7 +1,9 @@
 import React from "react";
 import axios from "axios";
 import "./Game.css";
-import { Card } from "./Card";
+import Card from "./Card";
+import ScoreBoard from "./ScoreBoard";
+
 const apiUrl = "https://deckofcardsapi.com/api/deck";
 
 export class Game extends React.Component {
@@ -9,6 +11,11 @@ export class Game extends React.Component {
     super(props);
     this.placeholderItems = 3;
     this.emptyHand = { cards: [], score: 0 };
+    this.strings = {
+      win: "win",
+      bust: "bust",
+      draw: "draw"
+    };
 
     this.initialState = {
       deck: {},
@@ -24,7 +31,7 @@ export class Game extends React.Component {
     this.handleDeal = this.handleDeal.bind(this);
     this.handleReveal = this.handleReveal.bind(this);
     this.showGameResult = this.showGameResult.bind(this);
-    this.showScores = this.showScores.bind(this);
+    this.backToSplashScreen = this.backToSplashScreen.bind(this);
   }
 
   componentDidMount() {
@@ -32,7 +39,7 @@ export class Game extends React.Component {
   }
 
   drawCard(currentPlayer) {
-    const drawApi = `${apiUrl}/${this.state.deck.deck_id}/draw/?count=1`;
+    const drawApi = `${apiUrl}/${this.state.deck.deck_id}/draw/?count=2`;
     axios.get(drawApi).then(response => {
       if (this.state[currentPlayer].cards) {
         const currentPlayerHand = {
@@ -140,17 +147,17 @@ export class Game extends React.Component {
       (dealersHand.score <= 21 && dealersHand.score > playersHand.score)
     ) {
       this.setState({
-        gameResultMessage: "Bust :("
+        gameResultMessage: this.strings.bust
       });
-      this.props.updateScore("bust");
+      this.props.updateScore(this.strings.bust);
       return;
     }
 
     if (playersHand.score === dealersHand.score) {
       this.setState({
-        gameResultMessage: "Draw :|"
+        gameResultMessage: this.strings.draw
       });
-      this.props.updateScore("draw");
+      this.props.updateScore(this.strings.draw);
       return;
     }
 
@@ -159,9 +166,9 @@ export class Game extends React.Component {
       (playersHand.score >= dealersHand.score || dealersHand.score > 21)
     ) {
       this.setState({
-        gameResultMessage: "Win :)"
+        gameResultMessage: this.strings.win
       });
-      this.props.updateScore("win");
+      this.props.updateScore(this.strings.win);
       return;
     }
   }
@@ -173,33 +180,52 @@ export class Game extends React.Component {
     });
   }
 
-  showScores() {
+  backToSplashScreen() {
     this.props.endGame();
   }
 
   showGameResult() {
+    const { gameResultMessage, dealersHand, playersHand } = this.state;
+    const getResulStyles = () => {
+      let titleStyling = "text-capitalize text-white rounded p-1 shadow-sm";
+      if (gameResultMessage === this.strings.win) {
+        titleStyling += " bg-success"
+      }
+      if (gameResultMessage === this.strings.draw) {
+        titleStyling += " bg-warning";
+      }
+      if (gameResultMessage === this.strings.bust) {
+        titleStyling += " bg-danger";
+      }
+      return titleStyling;
+    };
+
+    const resultMessageStyles = getResulStyles();
+
     return (
-      <div className="position-fixed game-result d-flex justify-content-center align-items-cener flex-column">
+      <div className="position-fixed popup-overlay d-flex justify-content-center align-items-cener flex-column">
         <div className="row no-gutters mb-5 animated fadeIn delay-1s">
           <div className="col-10 col-md-6 mx-auto">
             <div className="card shadow p-3">
-              <h2>
-                {this.state.gameResultMessage
-                  ? this.state.gameResultMessage
-                  : ""}
-              </h2>
-              <p>
-                Dealers score: <strong>{this.state.dealersHand.score}</strong>
-              </p>
-              <p>
-                Your score : <strong>{this.state.playersHand.score}</strong>
-              </p>
-              <div className="btn-group btn-group-justified">
+              <h2 className={resultMessageStyles}>{gameResultMessage} </h2>
+              <div className="row mb-3">
+                <div className="col-6">
+                  Your Hand : <strong>{playersHand.score}</strong>
+                </div>
+                <div className="col-6">
+                  Dealers Hand: <strong>{dealersHand.score}</strong>
+                </div>
+              </div>
+              <ScoreBoard {...this.props.gameScore} />
+              <div className="btn-group btn-group-justified mt-3">
                 <button className={"btn btn-success"} onClick={this.handleDeal}>
                   Deal again
                 </button>
-                <button className={"btn btn-danger"} onClick={this.showScores}>
-                  Show scores
+                <button
+                  className={"btn btn-danger"}
+                  onClick={this.backToSplashScreen}
+                >
+                  Main Menu
                 </button>
               </div>
             </div>
@@ -235,14 +261,10 @@ export class Game extends React.Component {
               : null}
           </div>
         </div>
-        {this.state.cardsDealt ? (
-          <div className="btn-group my-3 my-xl-5 align-self-center animated delay-1s fadeIn">
+        {this.state.cardsDealt && !this.state.cardsRevealed ? (
+          <div className="my-3 my-xl-5 align-self-center animated delay-1s fadeIn">
             <button
-              className={
-                !this.state.cardsRevealed
-                  ? "btn btn-success"
-                  : "btn invisible disabled"
-              }
+              className={"btn btn-lg btn-success"}
               onClick={this.handleReveal}
             >
               Reveal

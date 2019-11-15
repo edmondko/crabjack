@@ -23,3 +23,17 @@
 .App-link {
   color: #09d3ac;
 }
+
+
+.popup-overlay {
+  top: 0;
+  left: 0;
+  right: 0;
+  min-height: 100vh;
+}
+
+.rules-container {
+  max-height: 80vh;
+  overflow-y: auto;
+
+}

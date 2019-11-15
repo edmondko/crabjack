@@ -24,21 +24,37 @@ class SplashScreen extends React.Component {
       <div className="SplashScreen">
         <div>
           <h1 className="display-5 text-white text-shadow mb-5">CrapJack</h1>
-          <div className="btn-group">
+          <div className="actions">
             <button
-              className={"btn btn-lg btn-success"}
+              className={"btn btn-block btn-lg btn-success"}
               onClick={this.handleGameStart}
             >
               Start game
             </button>
             <button
-              className={"btn btn-lg btn-secondary"}
+              className={"btn btn-block btn-lg btn-warning"}
               onClick={() => this.toggleRules(!this.state.rulesShown)}
             >
               {this.state.rulesShown ? "Hide" : "Show"} Rules
             </button>
           </div>
-          <div>{this.state.rulesShown ? <Rules /> : null}</div>
+          <div>
+            {this.state.rulesShown ? (
+              <div className="position-fixed popup-overlay d-flex justify-content-center align-items-cener flex-column">
+                <div className="container">
+                  <button
+                    className={"btn btn-warning m-3"}
+                    onClick={() => this.toggleRules(!this.state.rulesShown)}
+                  >
+                    Go back
+                  </button>
+                  <div className="card shadow p-3 animated fadeInUp rules-container">
+                    <Rules />
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
     );
