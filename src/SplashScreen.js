@@ -35,7 +35,7 @@ class SplashScreen extends React.Component {
               className={"btn btn-lg btn-secondary"}
               onClick={() => this.toggleRules(!this.state.rulesShown)}
             >
-              {this.state.rulesShown ? "Hide" : "View"} rules
+              {this.state.rulesShown ? "Hide" : "Show"} Rules
             </button>
           </div>
           <div>{this.state.rulesShown ? <Rules /> : null}</div>

@@ -14,15 +14,17 @@ export class Game extends React.Component {
       deck: {},
       dealersHand: this.emptyHand,
       playersHand: this.emptyHand,
+      cardsDealt: false,
       cardsRevealed: false,
-      gameResult: ""
+      gameResultMessage: ""
     };
 
     this.state = this.initialState;
 
-    this.showGameResult = this.showGameResult.bind(this);
     this.handleDeal = this.handleDeal.bind(this);
     this.handleReveal = this.handleReveal.bind(this);
+    this.showGameResult = this.showGameResult.bind(this);
+    this.showScores = this.showScores.bind(this);
   }
 
   componentDidMount() {
@@ -73,7 +75,8 @@ export class Game extends React.Component {
           playersHand: {
             cards: playersCards,
             score: this.state.playersHand.score
-          }
+          },
+          cardsDealt: true
         });
       }
     });
@@ -100,23 +103,24 @@ export class Game extends React.Component {
     this.setState(this.initialState);
   }
 
-  calcPlayerScore(currentPlayer) {
+  calcPlayerScore(playersList) {
     const specialCards = ["JACK", "QUEEN", "KING", "ACE"];
-    let playerScore = 0;
 
-    this.state[currentPlayer].cards.forEach(function(card, index) {
-      const cardScore = specialCards.includes(card.value)
-        ? 10
-        : parseInt(card.value, 10);
-      playerScore += cardScore;
+    const scores = playersList.map(currentPlayer => {
+      let scoreResult = 0;
+      this.state[currentPlayer].cards.forEach((card, index) => {
+        const cardScore = specialCards.includes(card.value)
+          ? 10
+          : parseInt(card.value, 10);
+        scoreResult += cardScore;
+      });
+      return scoreResult;
     });
 
     this.setState(
-      {
-        [currentPlayer]: {
-          cards: this.state[currentPlayer].cards,
-          score: playerScore
-        }
+      state => {
+        state[playersList[0]].score = scores[0];
+        state[playersList[1]].score = scores[1];
       },
       () => {
         this.checkWinner();
@@ -125,8 +129,7 @@ export class Game extends React.Component {
   }
 
   calcScore() {
-    this.calcPlayerScore("dealersHand");
-    this.calcPlayerScore("playersHand");
+    this.calcPlayerScore(["dealersHand", "playersHand"]);
   }
 
   checkWinner() {
@@ -136,12 +139,18 @@ export class Game extends React.Component {
       playersHand.score > 21 ||
       (dealersHand.score <= 21 && dealersHand.score > playersHand.score)
     ) {
-      this.setState({ gameResult: "Bust" });
+      this.setState({
+        gameResultMessage: "Bust :("
+      });
+      this.props.updateScore("bust");
       return;
     }
 
     if (playersHand.score === dealersHand.score) {
-      this.setState({ gameResult: "Draw" });
+      this.setState({
+        gameResultMessage: "Draw :|"
+      });
+      this.props.updateScore("draw");
       return;
     }
 
@@ -149,7 +158,10 @@ export class Game extends React.Component {
       playersHand.score <= 21 &&
       (playersHand.score >= dealersHand.score || dealersHand.score > 21)
     ) {
-      this.setState({ gameResult: "You win!" });
+      this.setState({
+        gameResultMessage: "Win :)"
+      });
+      this.props.updateScore("win");
       return;
     }
   }
@@ -161,25 +173,35 @@ export class Game extends React.Component {
     });
   }
 
+  showScores() {
+    this.props.endGame();
+  }
+
   showGameResult() {
     return (
       <div className="position-fixed game-result d-flex justify-content-center align-items-cener flex-column">
         <div className="row no-gutters mb-5 animated fadeIn delay-1s">
           <div className="col-10 col-md-6 mx-auto">
             <div className="card shadow p-3">
-              <h2>{this.state.gameResult ? this.state.gameResult : ""}</h2>
+              <h2>
+                {this.state.gameResultMessage
+                  ? this.state.gameResultMessage
+                  : ""}
+              </h2>
               <p>
                 Dealers score: <strong>{this.state.dealersHand.score}</strong>
               </p>
               <p>
                 Your score : <strong>{this.state.playersHand.score}</strong>
               </p>
-              <button
-                className={"btn btn-lg btn-success"}
-                onClick={this.handleDeal}
-              >
-                Deal
-              </button>
+              <div className="btn-group btn-group-justified">
+                <button className={"btn btn-success"} onClick={this.handleDeal}>
+                  Deal again
+                </button>
+                <button className={"btn btn-danger"} onClick={this.showScores}>
+                  Show scores
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -213,19 +235,20 @@ export class Game extends React.Component {
               : null}
           </div>
         </div>
-
-        <div className="btn-group my-3 my-xl-5 align-self-center">
-          <button
-            className={
-              !this.state.cardsRevealed
-                ? "btn btn-success"
-                : "btn invisible disabled"
-            }
-            onClick={this.handleReveal}
-          >
-            Reveal
-          </button>
-        </div>
+        {this.state.cardsDealt ? (
+          <div className="btn-group my-3 my-xl-5 align-self-center animated delay-1s fadeIn">
+            <button
+              className={
+                !this.state.cardsRevealed
+                  ? "btn btn-success"
+                  : "btn invisible disabled"
+              }
+              onClick={this.handleReveal}
+            >
+              Reveal
+            </button>
+          </div>
+        ) : null}
         <div className="player-hand d-flex flex-column flex-fill justify-content-end">
           <div className="row justify-content-center px-3">
             {this.state.playersHand.cards.length > 0

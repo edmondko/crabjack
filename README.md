@@ -1,3 +1,24 @@
+## This is a task for TheStarsGroup done by Edmond Kojumdgian
+I've used react for implementation of the task.
+I've break down some of the core components as classes, and used functional components as well to show how they are used in reusable code (Card.js);
+I've used animate.css and bootstrap for the styling.
+I've taken advantage of flex-box layout to render responsively the game.
+
+The code structure follows the simple principle of having separate .css files where needed for components with custom styling.
+
+To start reviewing please run `npm install && npm start`;
+
+## Time spent on the task
+I've spent about 8 hours totally for finishing the core task;
+- 1h for research
+- 4h for logic implementation
+- 3h for design and basic animations
+
+The task itself can be pretty extensive since a lot can be improved and optimized but since the given dead line, I couldn't commit to finish all of the Advanced features.
+The one I focused on was animations of the revealing of the cards.
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
